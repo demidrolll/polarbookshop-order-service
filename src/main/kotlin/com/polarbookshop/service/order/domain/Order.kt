@@ -12,8 +12,8 @@ data class Order(
   @field:Id
   val id: Long? = null,
   val bookIsbn: String,
-  val bookName: String,
-  val bookPrice: Double,
+  val bookName: String?,
+  val bookPrice: Double?,
   val quantity: Int,
   val orderStatus: OrderStatus,
 
@@ -29,8 +29,8 @@ data class Order(
   companion object {
     fun of(
       bookIsbn: String,
-      bookName: String,
-      bookPrice: Double,
+      bookName: String?,
+      bookPrice: Double?,
       quantity: Int,
       orderStatus: OrderStatus
     ): Order =
