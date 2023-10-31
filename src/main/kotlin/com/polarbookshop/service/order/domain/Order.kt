@@ -15,7 +15,7 @@ data class Order(
   val bookName: String?,
   val bookPrice: Double?,
   val quantity: Int,
-  val orderStatus: OrderStatus,
+  val status: OrderStatus,
 
   @field:CreatedDate
   val createdDate: Instant? = null,
@@ -40,7 +40,7 @@ data class Order(
         bookName = bookName,
         bookPrice = bookPrice,
         quantity = quantity,
-        orderStatus = orderStatus,
+        status = orderStatus,
       )
   }
 }
