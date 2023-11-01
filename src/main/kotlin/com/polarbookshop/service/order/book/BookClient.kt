@@ -1,10 +1,11 @@
 package com.polarbookshop.service.order.book
 
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
+import reactor.util.retry.Retry
+import java.time.Duration
 
 @Component
 class BookClient(
@@ -16,10 +17,10 @@ class BookClient(
       .uri("/books/$isbn")
       .retrieve()
       .bodyToMono(Book::class.java)
-      .onErrorResume(WebClientResponseException::class.java) { ex ->
-        if (ex.statusCode == HttpStatus.NOT_FOUND)
-          Mono.empty()
-        else
-          Mono.error(ex)
-      }
+      .timeout(Duration.ofSeconds(3), Mono.empty())
+      .onErrorResume(WebClientResponseException.NotFound::class.java) { Mono.empty() }
+      .retryWhen(
+        Retry.backoff(3, Duration.ofMillis(100))
+      )
+      .onErrorResume { Mono.empty() }
 }
