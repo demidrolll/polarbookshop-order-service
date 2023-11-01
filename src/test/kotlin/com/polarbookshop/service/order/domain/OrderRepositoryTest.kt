@@ -32,21 +32,31 @@ class OrderRepositoryTest {
   }
 
   companion object {
-    private val postgresql: PostgreSQLContainer<*> = PostgreSQLContainer(DockerImageName.parse("postgres:14.4"))
+    private val postgresql: PostgreSQLContainer<*> = PostgreSQLContainer(DockerImageName.parse("postgres:alpine3.17"))
 
     @DynamicPropertySource
+    @JvmStatic
     fun postgresqlProperties(registry: DynamicPropertyRegistry) {
-      registry.add("spring.r2dbc.url", OrderRepositoryTest::r2dbcUrl);
-      registry.add("spring.r2dbc.username", postgresql::getUsername);
-      registry.add("spring.r2dbc.password", postgresql::getPassword);
-      registry.add("spring.flyway.url", postgresql::getJdbcUrl);
+      registry.add("spring.r2dbc.url", OrderRepositoryTest::r2dbcUrl)
+      registry.add("spring.r2dbc.username", postgresql::getUsername)
+      registry.add("spring.r2dbc.password", postgresql::getPassword)
+      registry.add("spring.flyway.url", OrderRepositoryTest::jdbcUrl)
     }
 
     private fun r2dbcUrl(): String {
       return String.format(
         "r2dbc:postgresql://%s:%s/%s",
         postgresql.host,
-        postgresql.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT),
+        PostgreSQLContainer.POSTGRESQL_PORT, //postgresql.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT),
+        postgresql.databaseName
+      )
+    }
+
+    private fun jdbcUrl(): String {
+      return String.format(
+        "jdbc:postgresql://%s:%s/%s",
+        postgresql.host,
+        PostgreSQLContainer.POSTGRESQL_PORT, //postgresql.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT),
         postgresql.databaseName
       )
     }
