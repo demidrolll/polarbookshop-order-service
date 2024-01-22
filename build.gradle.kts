@@ -10,6 +10,9 @@ plugins {
 group = "com.polarbookshop"
 version = "0.0.1-SNAPSHOT"
 
+extra["springCloudVersion"] = "2022.0.4"
+extra["testcontainersVersion"] = "1.19.0"
+
 java {
 	sourceCompatibility = JavaVersion.VERSION_17
 }
@@ -22,6 +25,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
+	implementation("org.springframework.cloud:spring-cloud-starter-config")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -41,6 +45,13 @@ dependencies {
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 }
 
+dependencyManagement {
+	imports {
+		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+		mavenBom("org.testcontainers:testcontainers-bom:${property("testcontainersVersion")}")
+	}
+}
+
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
 		freeCompilerArgs += "-Xjsr305=strict"
@@ -50,4 +61,17 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.bootBuildImage {
+	imageName.set(project.name)
+	environment.set(mapOf("BP_JVM_VERSION" to "17.*"))
+
+	docker {
+		publishRegistry {
+			project.findProperty("registryUsername")?.let { username.set(it as String) }
+			project.findProperty("registryToken")?.let { password.set(it as String) }
+			project.findProperty("registryUrl")?.let { url.set(it as String) }
+		}
+	}
 }
