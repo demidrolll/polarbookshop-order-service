@@ -33,5 +33,5 @@ spec:
               value: jdbc:postgresql://polar-postgres/polardb_order
             - name: SPRING_CLOUD_CONFIG_URI
               value: http://config-service
-            - name: POLAR_CATALOG-SERVICE-URI
+            - name: POLAR_CATALOG_SERVICE_URI
               value: http://catalog-service
