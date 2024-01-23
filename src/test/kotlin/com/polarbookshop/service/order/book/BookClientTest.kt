@@ -45,7 +45,7 @@ class BookClientTest {
 "publisher": "Polarsophia"
 }
 """
-          .formatted(bookIsbn)
+          .format(bookIsbn)
       )
 
     mockWebServer.enqueue(mockResponse)
