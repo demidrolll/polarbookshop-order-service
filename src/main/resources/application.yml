@@ -16,6 +16,18 @@ spring:
     function:
       definition: dispatchOrder
     stream:
+      binders:
+        rabbit:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: "localhost"
+                port: 5672
+                username: "guest"
+                password: "guest"
+                virtual-host: /
+                connection-timeout: 5s
       bindings:
         dispatchOrder-in-0:
           destination: order-dispatched
@@ -50,12 +62,6 @@ spring:
     user: ${spring.r2dbc.username}
     password: ${spring.r2dbc.password}
     url: jdbc:postgresql://localhost:5432/polardb_order
-  rabbitmq:
-    host: "localhost"
-    port: 5672
-    username: "guest"
-    password: "guest"
-    connection-timeout: 5s
 
 polar:
   catalog-service-uri: "http://localhost:9001"
