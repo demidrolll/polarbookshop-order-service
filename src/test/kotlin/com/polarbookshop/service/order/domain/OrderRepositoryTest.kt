@@ -34,7 +34,7 @@ class OrderRepositoryTest {
   }
 
   companion object {
-    private val postgresql: PostgreSQLContainer<*> = PostgreSQLContainer(DockerImageName.parse("postgres:alpine3.17"))
+    val postgresql: PostgreSQLContainer<*> = PostgreSQLContainer(DockerImageName.parse("postgres:alpine3.17"))
 
     @DynamicPropertySource
     @JvmStatic
