@@ -2,6 +2,7 @@ package com.polarbookshop.service.order.domain
 
 import com.polarbookshop.service.order.book.Book
 import com.polarbookshop.service.order.book.BookClient
+import com.polarbookshop.service.order.event.OrderDispatchedMessage
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -21,6 +22,19 @@ class OrderService(
       .map { book -> buildAcceptedOrder(book, quantity) }
       .switchIfEmpty { Mono.just(buildRejectedOrder(isbn, quantity)) }
       .flatMap(orderRepository::save)
+
+  fun consumeOrderDispatchedMessageEvent(flux: Flux<OrderDispatchedMessage>): Flux<Order> =
+    flux
+      .flatMap { message ->
+        orderRepository.findById(message.orderId)
+      }
+      .map(::buildDispatchedOrder)
+      .flatMap(orderRepository::save)
+
+  private fun buildDispatchedOrder(exist: Order): Order =
+    exist.copy(
+      status = OrderStatus.DISPATCHED
+    )
 
   companion object {
 
