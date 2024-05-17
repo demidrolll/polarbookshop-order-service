@@ -12,6 +12,7 @@ version = "0.0.1-SNAPSHOT"
 
 extra["springCloudVersion"] = "2022.0.4"
 extra["testcontainersVersion"] = "1.19.0"
+extra["testKeycloakVersion"] = "2.3.0"
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_17
@@ -25,6 +26,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 	implementation("org.springframework.cloud:spring-cloud-starter-config")
 	implementation("org.springframework.cloud:spring-cloud-stream-binder-rabbit")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -45,6 +47,9 @@ dependencies {
 	testImplementation("org.testcontainers:r2dbc")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("org.springframework.cloud:spring-cloud-stream-test-binder")
+	testImplementation("org.springframework.security:spring-security-test")
+	testImplementation("org.testcontainers:junit-jupiter")
+	testImplementation("com.github.dasniko:testcontainers-keycloak:${property("testKeycloakVersion")}")
 }
 
 dependencyManagement {

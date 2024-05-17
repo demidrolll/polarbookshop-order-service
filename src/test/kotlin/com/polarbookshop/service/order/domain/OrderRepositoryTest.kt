@@ -1,11 +1,11 @@
 package com.polarbookshop.service.order.domain
 
 import com.polarbookshop.service.order.config.DataConfig
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest
 import org.springframework.context.annotation.Import
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
@@ -16,7 +16,7 @@ import reactor.kotlin.test.test
 @DataR2dbcTest
 @Import(DataConfig::class)
 @Testcontainers
-@Disabled
+@ActiveProfiles("integration")
 class OrderRepositoryTest {
 
   @Autowired
