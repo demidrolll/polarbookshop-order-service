@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest
 import org.springframework.context.annotation.Import
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
@@ -12,6 +13,7 @@ import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
 import reactor.kotlin.test.test
+import java.util.*
 
 @DataR2dbcTest
 @Import(DataConfig::class)
@@ -33,12 +35,37 @@ class OrderRepositoryTest {
       .verifyComplete()
   }
 
+  @Test
+  fun `when create order not authenticated then no audit metadata`() {
+    val rejectedOrder = OrderService.buildRejectedOrder("1234567890", 3)
+    orderRepository.save(rejectedOrder)
+      .test()
+      .expectNextMatches { order ->
+        Objects.isNull(order.createdBy) && Objects.isNull(order.lastModifiedBy)
+      }
+      .verifyComplete()
+  }
+
+  @Test
+  @WithMockUser("marlena")
+  fun `when create order authenticated then audit metadata`() {
+    val rejectedOrder = OrderService.buildRejectedOrder("1234567890", 3)
+    orderRepository.save(rejectedOrder)
+      .test()
+      .expectNextMatches { order ->
+        Objects.equals(order.createdBy, "marlena") && Objects.equals(order.lastModifiedBy, "marlena")
+      }
+      .verifyComplete()
+  }
+
   companion object {
     val postgresql: PostgreSQLContainer<*> = PostgreSQLContainer(DockerImageName.parse("postgres:alpine3.17"))
 
     @DynamicPropertySource
     @JvmStatic
     fun postgresqlProperties(registry: DynamicPropertyRegistry) {
+      postgresql.start()
+
       registry.add("spring.r2dbc.url", OrderRepositoryTest::r2dbcUrl)
       registry.add("spring.r2dbc.username", postgresql::getUsername)
       registry.add("spring.r2dbc.password", postgresql::getPassword)

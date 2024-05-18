@@ -1,7 +1,9 @@
 package com.polarbookshop.service.order.domain
 
+import org.springframework.data.annotation.CreatedBy
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.LastModifiedBy
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
 import org.springframework.data.relational.core.mapping.Table
@@ -25,6 +27,12 @@ data class Order(
 
   @field:Version
   val version: Int = 0,
+
+  @field:CreatedBy
+  val createdBy: String? = null,
+
+  @field:LastModifiedBy
+  val lastModifiedBy: String? = null
 ) {
   companion object {
     fun of(

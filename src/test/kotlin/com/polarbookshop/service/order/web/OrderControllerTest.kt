@@ -1,5 +1,6 @@
 package com.polarbookshop.service.order.web
 
+import com.polarbookshop.service.order.config.SecurityConfig
 import com.polarbookshop.service.order.domain.Order
 import com.polarbookshop.service.order.domain.OrderService
 import com.polarbookshop.service.order.domain.OrderStatus
@@ -9,10 +10,15 @@ import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.context.annotation.Import
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers
 import org.springframework.test.web.reactive.server.WebTestClient
 import reactor.core.publisher.Mono
 
 @WebFluxTest
+@Import(SecurityConfig::class)
 class OrderControllerTest {
 
   @Autowired
@@ -20,6 +26,9 @@ class OrderControllerTest {
 
   @MockBean
   private lateinit var orderService: OrderService
+
+  @MockBean
+  private lateinit var reactiveJwtDecoder: ReactiveJwtDecoder
 
   @Test
   fun `when book is not available then reject order`() {
@@ -30,6 +39,11 @@ class OrderControllerTest {
     ).willReturn(Mono.just(expectedOrder))
 
     webClient
+      .mutateWith(
+        SecurityMockServerConfigurers
+          .mockJwt()
+          .authorities(SimpleGrantedAuthority("ROLE_customer"))
+      )
       .post()
       .uri("/orders")
       .bodyValue(orderRequest)
