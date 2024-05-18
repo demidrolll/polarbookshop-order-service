@@ -19,8 +19,8 @@ class OrderService(
   private val streamBridge: StreamBridge
 ) {
 
-  fun getAllOrders(): Flux<Order> =
-    orderRepository.findAll()
+  fun getAllOrders(userId: String?): Flux<Order> =
+    orderRepository.findAllByCreatedBy(userId)
 
   @Transactional
   fun submitOrder(isbn: String, quantity: Int) =
