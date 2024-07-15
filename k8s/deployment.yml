@@ -35,3 +35,15 @@ spec:
               value: http://config-service
             - name: POLAR_CATALOG_SERVICE_URI
               value: http://catalog-service
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 9002
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 9002
+            initialDelaySeconds: 5
+            periodSeconds: 15
