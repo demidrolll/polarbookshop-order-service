@@ -13,6 +13,7 @@ version = "0.0.1-SNAPSHOT"
 extra["springCloudVersion"] = "2022.0.4"
 extra["testcontainersVersion"] = "1.19.0"
 extra["testKeycloakVersion"] = "2.3.0"
+extra["otelVersion"] = "2.6.0"
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_17
@@ -38,6 +39,8 @@ dependencies {
 	runtimeOnly("org.postgresql:r2dbc-postgresql")
 	runtimeOnly("org.flywaydb:flyway-core")
 	runtimeOnly("org.springframework:spring-jdbc")
+	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+	runtimeOnly("io.opentelemetry.javaagent:opentelemetry-javaagent:${property("otelVersion")}")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
